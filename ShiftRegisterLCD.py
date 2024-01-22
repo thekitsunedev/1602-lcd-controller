@@ -87,10 +87,11 @@ class LCD:
         self.__setMode()
         if blink:
             self.__writeReg(0xf)
-        elif active:
+            return
+        if active:
             self.__writeReg(0xe)
-        else:
-            self.__writeReg(0xc)
+            return
+        self.__writeReg(0xc)
 
 
     def displayOff(self) -> None:
@@ -141,7 +142,7 @@ class LCD:
 
         self.__setMode()
         for _ in range(step):
-            self.__writeReg(0x10)
+            self.__writeReg(0x1C)
 
 
     def __writeReg(self, data: int) -> None:
@@ -157,24 +158,25 @@ class LCD:
             self.__register_enable.on()
             self.__register_enable.off()
             data >>= 1
-            time.sleep_us(10)
         self.__register_enable.on()
         self.__register_enable.off()
+        time.sleep_ms(1)
         self.__lcd_enable.on()
         self.__lcd_enable.off()
-        time.sleep_us(100)
+        time.sleep_ms(1)
     
     def __clearReg(self) -> None:
         """Clears the shift register"""
 
         self.__register_clear.off()
-        self.__register_data.off()
-        self.__register_enable.on()
-        self.__register_enable.off()
+        for _ in range(10):
+            self.__register_data.value(0)
+            self.__register_enable.on()
+            self.__register_enable.off()
         self.__register_clear.on()
+        time.sleep_ms(1)
     
     def __setMode(self, mode: bool = False) -> None:
         """When set to low, the LCD is in Command mode."""
 
         self.__lcd_rs.value(mode)
-    
