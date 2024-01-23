@@ -169,10 +169,6 @@ class LCD:
         """Clears the shift register"""
 
         self.__register_clear.off()
-        for _ in range(10):
-            self.__register_data.value(0)
-            self.__register_enable.on()
-            self.__register_enable.off()
         self.__register_clear.on()
         time.sleep_ms(1)
     
