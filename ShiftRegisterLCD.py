@@ -8,7 +8,7 @@ class LCD:
         self.__register_data = register_data
         self.__register_clear = register_clear
         self.__register_enable = register_clock
-        self.__invert_data_lines == invert_data_lines
+        self.__invert_data_lines = invert_data_lines
         
         self.__writeReg(0x38)
         self.setCursorMode()
