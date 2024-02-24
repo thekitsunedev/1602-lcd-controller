@@ -2,13 +2,14 @@ import time
 
 class LCD:
     def __init__(self, register_data, register_clock,
-                 register_clear, lcd_clock, lcd_mode_sel):
+                 register_clear, lcd_clock, lcd_mode_sel, invert_data_lines: bool = False):
         self.__lcd_enable = lcd_clock
         self.__lcd_rs = lcd_mode_sel
         self.__register_data = register_data
         self.__register_clear = register_clear
         self.__register_enable = register_clock
-
+        self.__invert_data_lines == invert_data_lines
+        
         self.__writeReg(0x38)
         self.setCursorMode()
         self.setEntryMode()
@@ -154,10 +155,14 @@ class LCD:
         self.__clearReg()
         self.__register_enable.off()
         for _ in range(8):
-            self.__register_data.value(data & 0x01)
+            if self.__invert_data_lines:
+                self.__register_data.value(data & 0x80)
+                data <<= 1
+            else:
+                self.__register_data.value(data & 0x01)
+                data >>= 1
             self.__register_enable.on()
             self.__register_enable.off()
-            data >>= 1
         self.__register_enable.on()
         self.__register_enable.off()
         time.sleep_ms(1)
